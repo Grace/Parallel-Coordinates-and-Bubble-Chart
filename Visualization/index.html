@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>Visual Analytics D3 Project</title>
+  <meta name="description" content="">
+  <meta name="author" content="Grace Christenbery">
+
+    <!--Style-->
+    <style type="text/css">
+        html {
+            margin: 0;
+        }
+        body {
+            font-family: sans-serif;
+            font-size: 12px;
+            background: #fcfcfc;
+            color: #666;
+            margin: 12px 0 0 80px;
+            overflow: hidden;
+        }
+        h1 {
+            font-size: 15px;
+            margin: 16px;
+        }
+
+        p {
+            margin: 16px;
+        }
+
+        #vis {
+            position: relative;
+            top: 0px;
+            left: 50%;
+            margin-left: -500px; /*half the size of width of the chart*/
+        }
+
+        #chart-left {
+            position: relative;
+            top: 0px;
+            left: 50%;
+            margin-left: -480px; /*half the size of width of the chart*/
+        }
+        #chart-right {
+            position: absolute;
+            top: 600px;
+            right: 250px;
+        }
+
+        .link {
+            stroke: rgba(50,50,50,0.03);
+        }
+
+        .axis line, .axis path {
+            fill: none;
+            stroke: #666;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            fill: #666;
+            text-shadow: 0 1px 0 #fff;
+        }
+
+        text.title {
+            font-weight: bold;
+        }
+
+        path.node {
+            fill: none;
+        }
+
+        strong {
+            color: #222;
+            font-weight: bold;
+        }
+
+
+    </style>
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <!-- CSS concatenated and minified via ant build script-->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- end CSS-->
+
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+</head>
+
+<body>
+
+  <div id="container" class="container">
+    <header>
+    <h1>Visual Analytics D3 Project</h1>
+    <h2> by Grace Christenbery</h2>
+    </header>
+    <div id="main" role="main">
+      <div id="view_selection" class="btn-group">
+        <a href="#" id="all" class="hide">All Cereal</a>
+        <a href="#" id="manufacturer" class="hide">Cereal by Manufacturer</a>
+        <a href="#" id="resize_by_sugar" class="hide">Cereal by Sugar</a>
+        <a href="#" id="resize_by_calories" class="hide">Cereal by Calories</a>
+
+        <a href="#" id="resize_by_protein" class="hide">Cereal by Protein</a>
+        <a href="#" id="calories_in_color" class="hide">Calories in Color</a>
+        <a href="#" id="sugars_in_color" class="hide">Sugars in Color</a>
+        <a href="#" id="manufacturer_by_color" class="hide">Manufacturer by Color</a>
+        <a href="#" id="protein_by_color" class="hide">Protein by Color</a>
+       </div>
+      <div id="vis"></div>
+    </div>
+
+  </div> <!--! end of #container -->
+
+  <!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script> -->
+  <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+  <script defer src="js/plugins.js"></script>
+  <script defer src="js/script.js"></script>
+  <script src="js/CustomTooltip.js"></script>
+  <script src="js/libs/coffee-script.js"></script>
+  <script src="js/libs/d3.v2.min.js"></script>
+  <script src="js/libs/underscore.js"></script>
+  <script src="js/libs/colorbrewer.js"></script>
+  <script src="js/libs/dat.gui.min.js"></script>
+  <script type="text/coffeescript" src="coffee/vis.coffee"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+        $(document).ready(function() {
+            //Menu booleans
+            var sortByManufacturer = false;
+            var sizeByCalories = true;
+            var sizeBySugar = false;
+            var sizeByProtein = false;
+
+            //Menu
+            var Menu = function() {
+                //Toggle for sort by manufacturer
+                this.Manufacturer = function() {
+                    if(sortByManufacturer === true) {
+                        sortByManufacturer = false;
+                        toggle_view($('#all').attr('id'));
+                    }
+                    else {
+                        sortByManufacturer = true;
+                        toggle_view($('#manufacturer').attr('id'));
+                    }
+                };
+                this.Calories = function() {
+                    if(sizeByCalories === false) {
+                      sizeByCalories = true;
+                      sizeBySugar = false;
+                      sizeByProtein = false;
+                      toggle_view($('#resize_by_calories').attr('id'));
+                    }
+                };
+                this.Sugar = function() {
+                    if(sizeBySugar === false) {
+                        sizeBySugar = true;
+                        sizeByCalories = false;
+                        sizeByProtein = false;
+                        toggle_view($('#resize_by_sugar').attr('id'));
+                    }
+                };
+                this.Protein = function() {
+                    if(sizeByProtein === false) {
+                        sizeByProtein = true;
+                        sizeByCalories = false;
+                        sizeBySugar = false;
+                        toggle_view($('#resize_by_protein').attr('id'));
+                    }
+                };
+                this.Calories_in_Color = function () {
+                    toggle_view($('#calories_in_color').attr('id'));
+                };
+                this.Sugars_in_Color = function () {
+                    toggle_view($('#sugars_in_color').attr('id'));
+                };
+                this.Protein_in_Color = function () {
+                    toggle_view($('#protein_by_color').attr('id'));
+                };
+                this.Manufacturer_by_Color = function () {
+                    toggle_view($('#manufacturer_by_color').attr('id'));
+                };
+
+            };
+
+            //On window load, load the menu
+            window.onload = function() {
+                var text = new Menu();
+                var gui = new dat.GUI();
+                var folder1 = gui.addFolder('Sort by');
+                folder1.add(text, 'Manufacturer');
+                var folder2 = gui.addFolder('Resize by');
+                folder2.add(text, 'Calories')
+                folder2.add(text, 'Sugar')
+                folder2.add(text, 'Protein')
+                var folder3 = gui.addFolder('Color by');
+                folder3.add(text, 'Calories_in_Color')
+                folder3.add(text, 'Sugars_in_Color')
+                folder3.add(text, 'Protein_in_Color')
+                folder3.add(text, 'Manufacturer_by_Color')
+            };
+
+          //On button mouse click
+          $('#view_selection a').click(function() {
+            var view_type = $(this).attr('id');
+            $('#view_selection a').removeClass('active');
+            $(this).toggleClass('active');
+            toggle_view(view_type);
+            return false;
+          });
+        });
+    });
+  </script>
+
+  <!--Parallel Coordinates and Force-Directed Graph-->
+  <div id="chart-left"></div>
+  <div id="chart-right"></div>
+  <div style="clear:both;"></div>
+  <footer>
+      <!--<p><b>By Grace Christenbery and Dimitri Arethas</b></p>-->
+  </footer>
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+  
+</body>
+</html>

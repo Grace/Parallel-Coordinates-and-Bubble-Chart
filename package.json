@@ -1,0 +1,29 @@
+{
+  "name": "d3js_design_contest",
+  "version": "0.0.1",
+  "description": "Assignment for 4122: D3 design contest",
+  "main": "server.js",
+  "dependencies": {
+    "node-static": "~0.7.1",
+    "supervisor": "~0.5.6",
+    "csv": "~0.3.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/treehau5/d3js_design_contest.git"
+  },
+  "keywords": [
+    "d3",
+    "uncc"
+  ],
+  "author": "Dimitrios Arethas",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/treehau5/d3js_design_contest/issues"
+  },
+  "homepage": "https://github.com/treehau5/d3js_design_contest"
+}
