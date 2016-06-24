@@ -51,10 +51,3 @@ If running Python server:
 
 With a server properly running via the instructions above, index.html will work out of the box.
 
-### Todo:
-
-* Project complete! View coffee/vis.coffee for visualization code.
-
-### Links:
-
-Our code repository can be found here: https://github.com/treehau5/d3js_design_contest
